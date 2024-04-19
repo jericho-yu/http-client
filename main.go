@@ -57,18 +57,20 @@ func main() {
 
 	// // 还可以作为网关工具，转发本次请求到其他微服务
 	// c := *gin.Context
-	// requestBody5, err := io.ReadAll(c.Request.Body)
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
 	// // 转发给目标服务
 	// hc5 := httpClient.New("http://you-target.com").
 	// 	AddHeaders(map[string][]string{
 	// 		"Content-Type": []string{c.Request.Header.Get("Content-Type")},
 	// 		"Accept":       []string{c.Request.Header.Get("Accept")},
 	// 	}).
-	// 	SetMethod("这里写你接收请求的方法，以gin为例：*gin.Context.Request.Method").
-	// 	SetBody(requestBody5)
+	// 	SetMethod(c.Request.Method).
+	// 	SetBody(func() []byte {
+	// 		b, e := io.ReadAll(c.Request.Body)
+	// 		if e != nil {
+	// 			panic(e)
+	// 		}
+	// 		return b
+	// 	}())
 
 	// // 原样响应给前端
 	// c.String(hc5.GetResponse().StatusCode, string(hc5.GetResponseRawBody()))
