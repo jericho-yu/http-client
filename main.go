@@ -12,13 +12,12 @@ func printResp(hc *httpClient.HttpClient) {
 
 func main() {
 	// get 请求 这里还可以使用New("").SetMethod(http.MethodGet)
-	hc1 := httpClient.NewGet("http://www.baidu.com").
-		Send()
-	if hc1.Err != nil {
+	if hc1 := httpClient.NewGet("http://www.baidu.com").Send(); hc1.Err != nil {
 		fmt.Println(hc1.Err.Error())
 		return
+	} else {
+		printResp(hc1)
 	}
-	printResp(hc1)
 
 	// post 请求 这里还可以使用New("").SetMethod(http.MethodPost)
 	body2 := map[string]any{"name": "jericho-yu"}
