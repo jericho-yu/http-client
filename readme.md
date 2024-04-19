@@ -46,6 +46,5 @@ func main() {
 	}
 	printResp(hc2)
 }
-
 ```
-**注意：** `method`默认：GET。
+**注意：** 如果没有使用NewGet（类似：NewGet,NewPost等）方法或者没有设置SetMethod()，那么`method`默认：GET。
