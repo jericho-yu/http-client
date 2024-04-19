@@ -96,4 +96,19 @@ func main() {
 		panic(hc6.Err)
 	}
 	printResp(hc6)
+
+	// 批量发送请求
+	// Send requests in batches
+	hc7 := httpClient.HttpClientMultiple{}.
+		New().
+		SetClients([]*httpClient.HttpClient{
+			httpClient.NewGet("http://www.baidu.com"),
+			httpClient.NewGet("http://www.google.com"),
+		}).
+		Send()
+	for _, hc := range hc7.GetClients() {
+		if hc.Err != nil {
+			panic(hc.Err.Error())
+		}
+	}
 }

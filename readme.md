@@ -111,6 +111,7 @@ func main() {
 	c.Data(hc5.GetResponse().StatusCode, hc5.GetResponse().Header.Get("Content-Type"), hc5.GetResponseRawBody())
 
 	// 带有SSL证书的请求
+    // Request with SSL certificate
 	hc6 := httpClient.NewPost("http://you-target.com").
 		SetCert("/path/to/your/cert.pem").
 		Send()
@@ -118,6 +119,21 @@ func main() {
 		panic(hc6.Err)
 	}
 	printResp(hc6)
+
+    // 批量发送请求
+	// Send requests in batches
+	hc7 := httpClient.HttpClientMultiple{}.
+		New().
+		SetClients([]*httpClient.HttpClient{
+			httpClient.NewGet("http://www.baidu.com"),
+			httpClient.NewGet("http://www.google.com"),
+		}).
+		Send()
+	for _, hc := range hc7.GetClients() {
+		if hc.Err != nil {
+			panic(hc.Err.Error())
+		}
+	}
 }
 ```
 **注意：** 如果没有使用NewGet（类似：NewGet,NewPost等）方法或者没有设置SetMethod()，那么`method`默认：GET。
