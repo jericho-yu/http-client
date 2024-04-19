@@ -73,5 +73,5 @@ func main() {
 	// 	}())
 
 	// // 原样响应给前端
-	// c.String(hc5.GetResponse().StatusCode, string(hc5.GetResponseRawBody()))
+	// c.Data(hc5.GetResponse().StatusCode, hc5.GetResponse().Header.Get("Content-Type"), hc5.GetResponseBody())
 }

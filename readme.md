@@ -88,7 +88,7 @@ func main() {
 		}())
 
 	// 原样响应给前端
-	c.String(hc5.GetResponse().StatusCode, string(hc5.GetResponseRawBody()))
+    c.Data(hc5.GetResponse().StatusCode, hc5.GetResponse().Header.Get("Content-Type"), hc5.GetResponseBody())
 }
 ```
 **注意：** 如果没有使用NewGet（类似：NewGet,NewPost等）方法或者没有设置SetMethod()，那么`method`默认：GET。
