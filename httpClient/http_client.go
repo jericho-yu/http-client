@@ -2,6 +2,8 @@ package httpClient
 
 import (
 	"bytes"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
@@ -26,6 +28,8 @@ type (
 		response       *http.Response
 		responseBody   []byte
 		isReady        bool
+		cert           []byte
+		transport      *http.Transport
 	}
 )
 
@@ -57,6 +61,17 @@ func NewPut(url string) *HttpClient {
 // NewDelete 实例化：http客户端delete请求
 func NewDelete(url string) *HttpClient {
 	return New(url).SetMethod(http.MethodDelete)
+}
+
+// SetCert 设置SSL证书
+func (receiver *HttpClient) SetCert(filename string) *HttpClient {
+	var e error
+
+	// 读取证书文件
+	if receiver.cert, e = os.ReadFile(filename); e != nil {
+		receiver.Err = e
+	}
+	return receiver
 }
 
 // SetUrl 设置请求地址
@@ -302,6 +317,16 @@ func (receiver *HttpClient) GenerateRequest() *HttpClient {
 		return receiver
 	}
 
+	// 创建一个新的证书池，并将证书添加到池中
+	certPool := x509.NewCertPool()
+	certPool.AppendCertsFromPEM(receiver.cert)
+
+	// 创建一个新的TLS配置
+	tlsConfig := &tls.Config{RootCAs: certPool}
+
+	// 创建一个新的Transport
+	receiver.transport = &http.Transport{TLSClientConfig: tlsConfig}
+
 	receiver.isReady = true
 
 	return receiver
@@ -317,7 +342,7 @@ func (receiver *HttpClient) Send() *HttpClient {
 	}
 
 	// 发送新的请求
-	client := &http.Client{}
+	client := &http.Client{Transport: receiver.transport}
 	receiver.response, receiver.Err = client.Do(receiver.request)
 	if receiver.Err != nil {
 		receiver.Err = fmt.Errorf("发送失败：%s", receiver.Err.Error())
