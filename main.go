@@ -110,5 +110,7 @@ func main() {
 		if hc.Err != nil {
 			panic(hc.Err.Error())
 		}
+		fmt.Print(hc.GetRequest().URL.RawPath + ":")
+		printResp(hc)
 	}
 }
