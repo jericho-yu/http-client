@@ -1,3 +1,3 @@
 module github.com/jericho-yu/http-client
 
-go 1.20.8
+go 1.18
