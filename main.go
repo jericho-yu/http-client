@@ -60,8 +60,8 @@ func main() {
 	// // 转发给目标服务
 	// hc5 := httpClient.New("http://you-target.com").
 	// 	AddHeaders(map[string][]string{
-	// 		"Content-Type": []string{c.Request.Header.Get("Content-Type")},
-	// 		"Accept":       []string{c.Request.Header.Get("Accept")},
+	// 		"Content-Type": c.Request.Header["Content-Type"],
+	// 		"Accept":       c.Request.Header["Accept"],
 	// 	}).
 	// 	SetMethod(c.Request.Method).
 	// 	SetBody(func() []byte {

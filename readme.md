@@ -14,15 +14,15 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"io"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jericho-yu/http-client/httpClient"
 )
 
 func printResp(hc *httpClient.HttpClient) {
-	fmt.Printf("状态：%s；状态码：%d；响应内容：%s\n", hc.GetResponse().Status, hc.GetResponse().StatusCode, hc.GetResponseBody())
+	fmt.Printf("状态：%s；状态码：%d；响应内容：%s\n", hc.GetResponse().Status, hc.GetResponse().StatusCode, hc.GetResponseRawBody())
 }
 
 func main() {
@@ -75,8 +75,8 @@ func main() {
 	// 转发给目标服务
 	hc5 := httpClient.New("http://you-target.com").
 		AddHeaders(map[string][]string{
-			"Content-Type": []string{c.Request.Header.Get("Content-Type")},
-			"Accept":       []string{c.Request.Header.Get("Accept")},
+			"Content-Type": c.Request.Header["Content-Type"],
+			"Accept":       c.Request.Header["Accept"],
 		}).
 		SetMethod(c.Request.Method).
 		SetBody(func() []byte {
@@ -88,7 +88,7 @@ func main() {
 		}())
 
 	// 原样响应给前端
-    c.Data(hc5.GetResponse().StatusCode, hc5.GetResponse().Header.Get("Content-Type"), hc5.GetResponseBody())
+	c.Data(hc5.GetResponse().StatusCode, hc5.GetResponse().Header.Get("Content-Type"), hc5.GetResponseBody())
 }
 ```
 **注意：** 如果没有使用NewGet（类似：NewGet,NewPost等）方法或者没有设置SetMethod()，那么`method`默认：GET。
