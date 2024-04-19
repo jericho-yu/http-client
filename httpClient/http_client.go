@@ -161,8 +161,8 @@ func (receiver *HttpClient) SetFormDataBody(texts map[string]string, files map[s
 	return receiver
 }
 
-// SetPlain 设置纯文本请求体
-func (receiver *HttpClient) SetPlain(text string) *HttpClient {
+// SetPlainBody 设置纯文本请求体
+func (receiver *HttpClient) SetPlainBody(text string) *HttpClient {
 	receiver.SetHeaderContentType("plain")
 
 	receiver.requestBody = []byte(text)
@@ -170,8 +170,8 @@ func (receiver *HttpClient) SetPlain(text string) *HttpClient {
 	return receiver
 }
 
-// SetHtml 设置html请求体
-func (receiver *HttpClient) SetHtml(text string) *HttpClient {
+// SetHtmlBody 设置html请求体
+func (receiver *HttpClient) SetHtmlBody(text string) *HttpClient {
 	receiver.SetHeaderContentType("html")
 
 	receiver.requestBody = []byte(text)
@@ -179,8 +179,8 @@ func (receiver *HttpClient) SetHtml(text string) *HttpClient {
 	return receiver
 }
 
-// SetCss 设置Css请求体
-func (receiver *HttpClient) SetCss(text string) *HttpClient {
+// SetCssBody 设置Css请求体
+func (receiver *HttpClient) SetCssBody(text string) *HttpClient {
 	receiver.SetHeaderContentType("css")
 
 	receiver.requestBody = []byte(text)
@@ -188,8 +188,8 @@ func (receiver *HttpClient) SetCss(text string) *HttpClient {
 	return receiver
 }
 
-// SetJavascript 设置Javascript请求体
-func (receiver *HttpClient) SetJavascript(text string) *HttpClient {
+// SetJavascriptBody 设置Javascript请求体
+func (receiver *HttpClient) SetJavascriptBody(text string) *HttpClient {
 	receiver.SetHeaderContentType("javascript")
 
 	receiver.requestBody = []byte(text)
@@ -197,7 +197,7 @@ func (receiver *HttpClient) SetJavascript(text string) *HttpClient {
 	return receiver
 }
 
-func (receiver *HttpClient) SetSteam(file string) *HttpClient {
+func (receiver *HttpClient) SetSteamBody(file string) *HttpClient {
 	receiver.SetHeaderContentType("steam")
 
 	fileData, e := os.ReadFile(file)
@@ -214,7 +214,7 @@ func (receiver *HttpClient) SetSteam(file string) *HttpClient {
 func (receiver *HttpClient) SetHeaderContentType(key string) *HttpClient {
 	value := ContentType{}.GetValue(key)
 	if value != "" {
-		receiver.requestHeaders["Content-Type"] = append(receiver.requestHeaders["Content-Type"], value)
+		receiver.requestHeaders["Content-Type"] = []string{value}
 	}
 
 	return receiver
@@ -224,20 +224,56 @@ func (receiver *HttpClient) SetHeaderContentType(key string) *HttpClient {
 func (receiver *HttpClient) SetHeaderAccept(key string) *HttpClient {
 	value := Accept{}.GetValue(key)
 	if value != "" {
-		receiver.requestHeaders["Accept"] = append(receiver.requestHeaders["Accept"], value)
+		receiver.requestHeaders["Accept"] = []string{value}
 	}
 
 	return receiver
 }
 
-// GetResponse 获取响应
+// GetResponse 获取响应对象
 func (receiver *HttpClient) GetResponse() *http.Response {
 	return receiver.response
 }
 
-// GetResponseBody 获取响应体
-func (receiver *HttpClient) GetResponseBody() []byte {
+// GetResponseRawBody 获取原始响应体
+func (receiver *HttpClient) GetResponseRawBody() []byte {
 	return receiver.responseBody
+}
+
+// GetResponseJsonBody 获取json格式响应体
+func (receiver *HttpClient) GetResponseJsonBody(target any) *HttpClient {
+	if e := json.Unmarshal(receiver.responseBody, &target); e != nil {
+		receiver.Err = e
+	}
+	return receiver
+}
+
+// GetResponseXmlBody 获取xml格式响应体
+func (receiver *HttpClient) GetResponseXmlBody(target any) *HttpClient {
+	if e := xml.Unmarshal(receiver.responseBody, &target); e != nil {
+		receiver.Err = e
+	}
+	return receiver
+}
+
+// SaveResponseSteamFile 保存二进制到文件
+func (receiver *HttpClient) SaveResponseSteamFile(filename string) *HttpClient {
+	// 创建一个新的文件
+	file, err := os.Create(filename)
+	if err != nil {
+		receiver.Err = err
+		return receiver
+	}
+	defer func() { file.Close() }()
+
+	// 将二进制数据写入文件
+	_, err = file.Write(receiver.responseBody)
+	if err != nil {
+		receiver.Err = err
+		return receiver
+	}
+
+	return receiver
 }
 
 // GetRequest 获取请求
