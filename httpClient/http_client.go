@@ -30,8 +30,9 @@ type (
 )
 
 // New 实例化：http客户端
-func New() *HttpClient {
+func New(url string) *HttpClient {
 	return &HttpClient{
+		requestUrl:     url,
 		requestQueries: map[string]string{},
 		requestHeaders: map[string][]string{},
 		responseBody:   []byte{},
