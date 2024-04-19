@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/jericho-yu/http-client/httpClient"
 )
@@ -12,8 +11,8 @@ func printResp(hc *httpClient.HttpClient) {
 }
 
 func main() {
-	// get 请求
-	hc1 := httpClient.New("http://www.baidu.com").
+	// get 请求 这里还可以使用New("").SetMethod(http.MethodGet)
+	hc1 := httpClient.NewGet("http://www.baidu.com").
 		Send()
 	if hc1.Err != nil {
 		fmt.Println(hc1.Err.Error())
@@ -21,10 +20,9 @@ func main() {
 	}
 	printResp(hc1)
 
-	// post 请求
+	// post 请求 这里还可以使用New("").SetMethod(http.MethodPost)
 	body2 := map[string]any{"name": "jericho-yu"}
-	hc2 := httpClient.New("http://www.baidu.com").
-		SetMethod(http.MethodPost).
+	hc2 := httpClient.NewPost("http://www.baidu.com").
 		SetJsonBody(body2).
 		Send()
 	if hc2.Err != nil {

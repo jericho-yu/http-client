@@ -39,6 +39,26 @@ func New(url string) *HttpClient {
 	}
 }
 
+// NewGet 实例化：http客户端get请求
+func NewGet(url string) *HttpClient {
+	return New(url).SetMethod(http.MethodGet)
+}
+
+// NewPost 实例化：http客户端post请求
+func NewPost(url string) *HttpClient {
+	return New(url).SetMethod(http.MethodPost)
+}
+
+// NewPut 实例化：http客户端put请求
+func NewPut(url string) *HttpClient {
+	return New(url).SetMethod(http.MethodPut)
+}
+
+// NewDelete 实例化：http客户端delete请求
+func NewDelete(url string) *HttpClient {
+	return New(url).SetMethod(http.MethodDelete)
+}
+
 // SetUrl 设置请求地址
 func (receiver *HttpClient) SetUrl(url string) *HttpClient {
 	receiver.requestUrl = url
