@@ -21,7 +21,8 @@ func main() {
 
 	// post 请求 这里还可以使用New("").SetMethod(http.MethodPost)
 	body2 := map[string]any{"name": "jericho-yu"}
-	hc2 := httpClient.NewPost("http://www.baidu.com").
+	hc2 := httpClient.
+		NewPost("http://www.baidu.com").
 		SetJsonBody(body2).
 		Send()
 	if hc2.Err != nil {
@@ -31,7 +32,8 @@ func main() {
 	printResp(hc2)
 
 	// 将请求响应保存到文件
-	hc3 := httpClient.NewPost("http://www.baidu.com").
+	hc3 := httpClient.
+		NewPost("http://www.baidu.com").
 		SetHeaderAccept(httpClient.AcceptSteam).
 		Send().
 		SaveResponseSteamFile("./baidu.html")
@@ -43,7 +45,10 @@ func main() {
 
 	// 将请求响应体解析为json（当然baidu的解析结果会报错：invalid character '<' looking for beginning of value）
 	responseJson4 := make(map[string]any)
-	hc4 := httpClient.NewPost("http://www.baidu.com").SetHeaderAccept(httpClient.AcceptJson).Send().GetResponseJsonBody(&responseJson4)
+	hc4 := httpClient.NewPost("http://www.baidu.com").
+		SetHeaderAccept(httpClient.AcceptJson).
+		Send().
+		GetResponseJsonBody(&responseJson4)
 	if hc4.Err != nil {
 		fmt.Println(hc4.Err.Error())
 		return
