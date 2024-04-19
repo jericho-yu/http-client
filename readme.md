@@ -70,23 +70,23 @@ func main() {
 	}
 	printResp(hc4)
 
-	// // 还可以作为网关工具，转发本次请求到其他微服务
-	// c := *gin.Context
-	// requestBody5, err := io.ReadAll(c.Request.Body)
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
-	// // 转发给目标服务
-	// hc5 := httpClient.New("http://you-target.com").
-	// 	AddHeaders(map[string][]string{
-	// 		"Content-Type": []string{c.Request.Header.Get("Content-Type")},
-	// 		"Accept":       []string{c.Request.Header.Get("Accept")},
-	// 	}).
-	// 	SetMethod("这里写你接收请求的方法，以gin为例：*gin.Context.Request.Method").
-	// 	SetBody(requestBody5)
+	// 还可以作为网关工具，转发本次请求到其他微服务
+	c := *gin.Context
+	requestBody5, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	// 转发给目标服务
+	hc5 := httpClient.New("http://you-target.com").
+		AddHeaders(map[string][]string{
+			"Content-Type": []string{c.Request.Header.Get("Content-Type")},
+			"Accept":       []string{c.Request.Header.Get("Accept")},
+		}).
+		SetMethod("这里写你接收请求的方法，以gin为例：*gin.Context.Request.Method").
+		SetBody(requestBody5)
 
-	// // 原样响应给前端
-	// c.String(hc5.GetResponse().StatusCode, string(hc5.GetResponseRawBody()))
+	// 原样响应给前端
+	c.String(hc5.GetResponse().StatusCode, string(hc5.GetResponseRawBody()))
 }
 ```
 **注意：** 如果没有使用NewGet（类似：NewGet,NewPost等）方法或者没有设置SetMethod()，那么`method`默认：GET。
