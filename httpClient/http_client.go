@@ -253,9 +253,9 @@ func (r *HttpClient) GetResponse() *http.Response {
 // ParseByContentType 根据响应头Content-Type自动解析响应体
 func (r *HttpClient) ParseByContentType(target any) *HttpClient {
 	switch r.GetResponse().Header.Get("Content-Type") {
-	case "application/json":
+	case ContentTypeJson:
 		r.GetResponseJsonBody(target)
-	case "application/xml":
+	case ContentTypeXml:
 		r.GetResponseXmlBody(target)
 	}
 	return r
