@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
@@ -95,6 +96,16 @@ func (r *HttpClient) AddHeaders(headers map[string][]string) *HttpClient {
 // SetQueries 设置请求参数
 func (r *HttpClient) SetQueries(queries map[string]string) *HttpClient {
 	r.requestQueries = queries
+	return r
+}
+
+// SetAuthorization 设置认证
+func (r *HttpClient) SetAuthorization(username, password string) *HttpClient {
+	auth := fmt.Sprintf("%s:%s", username, password)
+	base64.StdEncoding.EncodeToString([]byte(auth))
+
+	r.requestHeaders["Authorization"] = []string{"Basic " + base64.StdEncoding.EncodeToString([]byte(auth))}
+
 	return r
 }
 
@@ -212,17 +223,43 @@ func (r *HttpClient) SetJavascriptBody(text string) *HttpClient {
 	return r
 }
 
-func (r *HttpClient) SetSteamBody(file string) *HttpClient {
-	r.SetHeaderContentType("steam")
+// SteamBody 设置二进制文件
+func (r *HttpClient) SetSteamBody(filename string) *HttpClient {
+	var (
+		err  error
+		file *os.File
+	)
 
-	fileData, e := os.ReadFile(file)
-	if e != nil {
-		r.Err = e
+	file, err = os.Open(filename)
+	if err != nil {
+		r.Err = err
 		return r
 	}
-	r.requestBody = fileData
+	defer file.Close()
+
+	// 获取文件大小
+	stat, _ := file.Stat()
+	size := stat.Size()
+
+	// 创建RequestBodyReader用于读取文件内容
+	r.requestBody, err = io.ReadAll(file)
+	if err != nil {
+		r.Err = err
+		return r
+	}
+	r.request.Header.Set("Content-Length", fmt.Sprintf("%d", size))
 
 	return r
+	// r.SetHeaderContentType("steam")
+
+	// fileData, err = os.ReadFile(filename)
+	// if err != nil {
+	// 	r.Err = err
+	// 	return r
+	// }
+	// r.requestBody = fileData
+
+	// return r
 }
 
 // SetHeaderContentType 设置请求头内容类型
