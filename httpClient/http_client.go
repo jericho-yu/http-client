@@ -100,11 +100,11 @@ func (r *HttpClient) SetQueries(queries map[string]string) *HttpClient {
 }
 
 // SetAuthorization 设置认证
-func (r *HttpClient) SetAuthorization(username, password string) *HttpClient {
+func (r *HttpClient) SetAuthorization(username, password, title string) *HttpClient {
 	auth := fmt.Sprintf("%s:%s", username, password)
 	base64.StdEncoding.EncodeToString([]byte(auth))
 
-	r.requestHeaders["Authorization"] = []string{"Basic " + base64.StdEncoding.EncodeToString([]byte(auth))}
+	r.requestHeaders["Authorization"] = []string{title + base64.StdEncoding.EncodeToString([]byte(auth))}
 
 	return r
 }
