@@ -104,7 +104,7 @@ func (r *HttpClient) SetAuthorization(username, password, title string) *HttpCli
 	auth := fmt.Sprintf("%s:%s", username, password)
 	base64.StdEncoding.EncodeToString([]byte(auth))
 
-	r.requestHeaders["Authorization"] = []string{title + base64.StdEncoding.EncodeToString([]byte(auth))}
+	r.requestHeaders["Authorization"] = []string{fmt.Sprintf("%s %s", title, base64.StdEncoding.EncodeToString([]byte(auth)))}
 
 	return r
 }
